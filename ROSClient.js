@@ -21,16 +21,22 @@ module.exports = function(options){
     
     // true iff connection to ROS master is established
     this.isConnected = false;
+    this.isConnecting = false;
     // true iff registerNodes was called before
     this.isRegistered = false;
     // true after registerNodes has completed
     this.nodesRegistered = false;
 
     this.connect = function (on_connection,on_error,on_close) {
-      if(that.ros) return;
+      if(that.isConnecting) return;
+      if(that.isConnected) return;
+      console.log('Connecting to websocket server.');
+      var has_closed = false;
+      that.isConnecting = true;
       that.ros = new ROSLIB.Ros({url : rosURL});
       that.ros.on('connection', function() {
           that.isConnected = true;
+          that.isConnecting = false;
           console.log('Connected to websocket server.');
           if (authentication) {
               // Acquire auth token for current user and authenticate, then call registerNodes
@@ -43,6 +49,11 @@ module.exports = function(options){
           }
       });
       that.ros.on('close', function() {
+          if(has_closed) {
+              return;
+          }
+          that.isConnecting = false;
+          has_closed = true;
           console.log('Connection was closed.');
           that.ros = undefined;
           that.isRegistered = false;
@@ -52,6 +63,11 @@ module.exports = function(options){
           }, 500);
       });
       that.ros.on('error', function(error) {
+          if(has_closed) {
+              return;
+          }
+          that.isConnecting = false;
+          has_closed = true;
           console.log('Error connecting to websocket server: ', error);
           if(that.ros) that.ros.close();
           that.ros = undefined;
