@@ -136,7 +136,7 @@ module.exports = function(ros, options){
           // TODO: wrap individual/class name in ''
           if(value_formatted.indexOf(iri) !== -1) {
               value_formatted = value_formatted.replace(
-                  new RegExp(iri, 'g'), rdf_namespaces[iri]+":");
+                  new RegExp(iri, 'g'), rdf_namespaces[iri]+":'")+"'";
           }
       }
       return value_formatted;
