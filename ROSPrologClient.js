@@ -116,7 +116,8 @@ module.exports = function(ros, options){
     client.callService(request, function(e) { });
     that.finished = true;
   };
-  
+
+  // TODO: is obsolete, remove
   this.format = function(result, rdf_namespaces) {
     if (result.error) {
       console.log("Prolog Query failed: " + result.error.toString());
@@ -142,19 +143,4 @@ module.exports = function(ros, options){
       return value_formatted;
     }
   };
-    
-//     this.waitForProlog = function () {
-//         var client = new ROSPrologClient(that.ros, {});
-//         client.jsonQuery("true", function(result) {
-//             client.finishClient();
-//             if(result.error) {
-//                 // Service does not exist
-//                 setTimeout(that.waitForProlog, 500);
-//             }
-//             else {
-//                 that.isPrologConnected = true;
-//             }
-//         });
-//     };
-  
 }
